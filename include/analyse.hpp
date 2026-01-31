@@ -40,7 +40,17 @@ namespace rs = std::ranges;
  */
 auto AnalyseFunctions(const std::vector<std::string> &files,
                       const analyzer::metric::MetricExtractor &metric_extractor) {
-    // здесь ваш код
+    std::vector<std::pair<function::Function, metric::MetricResults>> result;
+    function::FunctionExtractor func_extractor;
+    for (const auto &filename : files) {
+        file::File file(filename);
+        auto functions = func_extractor.Get(file);
+        for (auto &func : functions) {
+            auto metrics = metric_extractor.Get(func);
+            result.emplace_back(std::move(func), std::move(metrics));
+        }
+    }
+    return result;
 }
 
 /**
@@ -62,7 +72,11 @@ auto AnalyseFunctions(const std::vector<std::string> &files,
  * действительно исчезают из результата.
  */
 auto SplitByClasses(const auto &analysis) {
-    // здесь ваш код
+    return analysis
+        | rv::filter([](const auto &elem) { return elem.first.class_name.has_value(); })
+        | rv::chunk_by([](const auto &a, const auto &b) {
+            return a.first.class_name.value() == b.first.class_name.value();
+        });
 }
 
 /**
@@ -74,7 +88,10 @@ auto SplitByClasses(const auto &analysis) {
  * - Использует `chunk_by`, поэтому **порядок функций в `analysis` должен быть по файлам**.
  */
 auto SplitByFiles(const auto &analysis) {
-    // здесь ваш код
+    return analysis
+        | rv::chunk_by([](const auto &a, const auto &b) {
+            return a.first.filename == b.first.filename;
+        });
 }
 
 /**
@@ -87,7 +104,9 @@ auto SplitByFiles(const auto &analysis) {
  */
 void AccumulateFunctionAnalysis(const auto &analysis,
                                 const analyzer::metric_accumulator::MetricsAccumulator &accumulator) {
-    // здесь ваш код
+    for (const auto &elem : analysis) {
+        accumulator.AccumulateNextFunctionResults(elem.second);
+    }
 }
 
 }  // namespace analyzer

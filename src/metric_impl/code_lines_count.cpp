@@ -63,6 +63,9 @@ MetricResult::ValueType CodeLinesCountMetric::CalculateImpl(const function::Func
     // Почему start_line + 1?
     // Потому что первая строка — это строка с объявлением функции (def ...),
     // а тело функции начинается со следующей строки (обычно с отступа).                                             std::views::filter([&](int line) { return is_code_line(line); })));
+    return static_cast<int>(rs::distance(
+        rv::iota(start_line + 1, end_line + 1)
+        | std::views::filter([&](int line) { return is_code_line(line); })));
 }
 
 }  // namespace analyzer::metric::metric_impl

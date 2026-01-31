@@ -24,6 +24,8 @@ void AverageAccumulator::Accumulate(const metric::MetricResult &metric_result) {
     count++;
 }
 void AverageAccumulator::Finalize() {
+    if (count == 0)
+        throw std::runtime_error("AverageAccumulator::Finalize() called with no accumulated data");
     average = static_cast<double>(sum) / count;
     is_finalized = true;
 }

@@ -24,6 +24,8 @@ void SumAverageAccumulator::Accumulate(const metric::MetricResult &metric_result
     count++;
 }
 void SumAverageAccumulator::Finalize() {
+    if (count == 0)
+        throw std::runtime_error("SumAverageAccumulator::Finalize() called with no accumulated data");
     average = static_cast<double>(sum) / count;
     is_finalized = true;
 }
@@ -37,7 +39,7 @@ void SumAverageAccumulator::Reset() {
 
 SumAverageAccumulator::SumAverage SumAverageAccumulator::Get() const {
     if (!is_finalized)
-        throw std::runtime_error("CategoricalAccumulator::Get() called before Finalize()");
+        throw std::runtime_error("SumAverageAccumulator::Get() called before Finalize()");
     return {sum, average};
 }
 }  // namespace analyzer::metric_accumulator::metric_accumulator_impl

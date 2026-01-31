@@ -34,7 +34,7 @@ MetricResult::ValueType CyclomaticComplexityMetric::CalculateImpl(const function
     // - тернарный оператор (conditional_expression)
     constexpr std::array<std::string_view, 9> complexity_nodes = {
         "if_statement",            // if
-        "elif_statement",          // elif
+        "elif_clause",             // elif
         "for_statement",           // for
         "while_statement",         // while
         "try_statement",           // try
@@ -64,6 +64,15 @@ MetricResult::ValueType CyclomaticComplexityMetric::CalculateImpl(const function
     // сколько раз он встречается в `function_ast`, используя `std::string::find`
     // в цикле (это допустимо, так как вы работаете со строковым представлением AST,
     // а не с исходным кодом напрямую).
-
+    
+    int complexity = 1;
+    for (const auto &node_type : complexity_nodes) {
+        size_t pos = 0;
+        while ((pos = function_ast.find(node_type, pos)) != std::string::npos) {
+            ++complexity;
+            pos += node_type.size();
+        }
+    }
+    return complexity;
 }
 }  // namespace analyzer::metric::metric_impl

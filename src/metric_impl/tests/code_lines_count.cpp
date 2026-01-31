@@ -2,9 +2,42 @@
 
 #include <gtest/gtest.h>
 
+#include "file.hpp"
+#include "function.hpp"
+
 namespace analyzer::metric::metric_impl {
 
-// здесь ваш код
-TEST(BasicCheck, Sum) { EXPECT_EQ(1 + 1, 2); }
+namespace {
+
+auto GetFirstFunction(const std::string &filename) {
+    file::File file(filename);
+    function::FunctionExtractor extractor;
+    auto functions = extractor.Get(file);
+    return functions.at(0);
+}
+
+}  // namespace
+
+TEST(CodeLinesCount, Simple) {
+    auto func = GetFirstFunction("simple.py");
+    CodeLinesCountMetric metric;
+    auto result = metric.Calculate(func);
+    EXPECT_EQ(result.metric_name, "Code lines count");
+    EXPECT_EQ(std::get<int>(result.value), 5);
+}
+
+TEST(CodeLinesCount, Comments) {
+    auto func = GetFirstFunction("comments.py");
+    CodeLinesCountMetric metric;
+    auto result = metric.Calculate(func);
+    EXPECT_EQ(std::get<int>(result.value), 3);
+}
+
+TEST(CodeLinesCount, ManyLines) {
+    auto func = GetFirstFunction("many_lines.py");
+    CodeLinesCountMetric metric;
+    auto result = metric.Calculate(func);
+    EXPECT_EQ(std::get<int>(result.value), 11);
+}
 
 }  // namespace analyzer::metric::metric_impl

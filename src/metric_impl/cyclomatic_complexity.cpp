@@ -34,7 +34,7 @@ MetricResult::ValueType CyclomaticComplexityMetric::CalculateImpl(const function
     // - тернарный оператор (conditional_expression)
     constexpr std::array<std::string_view, 9> complexity_nodes = {
         "if_statement",            // if
-        "elif_statement",          // elif
+        "elif_clause",             // elif
         "for_statement",           // for
         "while_statement",         // while
         "try_statement",           // try

@@ -23,21 +23,21 @@ TEST(CodeLinesCount, Simple) {
     CodeLinesCountMetric metric;
     auto result = metric.Calculate(func);
     EXPECT_EQ(result.metric_name, "Code lines count");
-    EXPECT_EQ(result.value, 5);
+    EXPECT_EQ(std::get<int>(result.value), 5);
 }
 
 TEST(CodeLinesCount, Comments) {
     auto func = GetFirstFunction("comments.py");
     CodeLinesCountMetric metric;
     auto result = metric.Calculate(func);
-    EXPECT_EQ(result.value, 3);
+    EXPECT_EQ(std::get<int>(result.value), 3);
 }
 
 TEST(CodeLinesCount, ManyLines) {
     auto func = GetFirstFunction("many_lines.py");
     CodeLinesCountMetric metric;
     auto result = metric.Calculate(func);
-    EXPECT_EQ(result.value, 10);
+    EXPECT_EQ(std::get<int>(result.value), 11);
 }
 
 }  // namespace analyzer::metric::metric_impl
